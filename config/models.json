@@ -1,0 +1,32 @@
+{
+  "schema_version": 2,
+  "providers": {
+    "claude": {
+      "credential_service": "agent-side-lanes-anthropic",
+      "routes": {
+        "review": {"claude": {"protocol": "anthropic-native", "models": ["claude-sonnet-5", "claude-opus-5"]}}
+      }
+    },
+    "openrouter": {
+      "credential_service": "agent-side-lanes-openrouter",
+      "base_url": "https://openrouter.ai/api/v1",
+      "routes": {
+        "review": {"claude": {"protocol": "anthropic-compatible", "models": ["openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol"]}},
+        "execute": {
+          "codex": {"protocol": "responses", "models": ["anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "z-ai/glm-5.3"]},
+          "claude": {"protocol": "anthropic-compatible", "models": ["openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol", "z-ai/glm-5.3"]}
+        }
+      }
+    },
+    "glm": {
+      "credential_service": "agent-side-lanes-glm",
+      "base_url": "https://api.z.ai/api/anthropic",
+      "optional": true,
+      "routes": {
+        "review": {"claude": {"protocol": "anthropic-compatible", "models": ["glm-5.3"]}},
+        "execute": {"claude": {"protocol": "anthropic-compatible", "models": ["glm-5.3"]}}
+      }
+    }
+  },
+  "capabilities": ["workspace-write", "shell", "git-push", "gitnexus", "codegraph", "gcloud-read", "secret-use", "database-read", "workflow-write"]
+}
