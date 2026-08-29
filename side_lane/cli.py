@@ -125,6 +125,7 @@ def make_parser() -> argparse.ArgumentParser:
     check.add_argument("--mode", choices=("review", "execute"), default="execute")
     check.add_argument("--provider")
     check.add_argument("--model")
+    check.add_argument("--repo")
     check.add_argument("--json", action="store_true")
     run = sub.add_parser("run", allow_abbrev=False)
     run.add_argument("--host", choices=("codex", "claude"), default="claude")
@@ -168,9 +169,9 @@ def read_keychain_secret(service: str) -> str:
     return read_credential(service)
 
 
-def _capability_report(config: Mapping[str, Any], host: str, mode: str, provider: str | None, model: str | None) -> dict[str, Any]:
+def _capability_report(config: Mapping[str, Any], host: str, mode: str, provider: str | None, model: str | None, repo: Path | None = None) -> dict[str, Any]:
     runtime = shutil.which(host)
-    mcp_names = _discover_mcp_names(host)
+    mcp_names = _discover_mcp_names(host, repo)
     lowered = {name.lower() for name in mcp_names}
     states = {
         "workspace-write": mode == "execute",
@@ -201,7 +202,7 @@ def _capability_report(config: Mapping[str, Any], host: str, mode: str, provider
     return report
 
 
-def _discover_mcp_names(host: str) -> set[str]:
+def _discover_mcp_names(host: str, repo: Path | None = None) -> set[str]:
     names: set[str] = set()
     if host == "codex":
         path = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")) / "config.toml"
@@ -217,6 +218,20 @@ def _discover_mcp_names(host: str) -> set[str]:
             except (OSError, json.JSONDecodeError):
                 continue
             _collect_mcp_names(payload, names)
+    if repo is not None:
+        for path in (repo / ".mcp.json", repo / ".codex" / "config.toml"):
+            if not path.is_file():
+                continue
+            if path.suffix == ".json":
+                try:
+                    _collect_mcp_names(json.loads(path.read_text(encoding="utf-8")), names)
+                except (OSError, json.JSONDecodeError):
+                    continue
+            else:
+                names.update(re.findall(
+                    r"^\[mcp_servers\.([A-Za-z0-9_.-]+)\]",
+                    path.read_text(encoding="utf-8", errors="replace"), re.M
+                ))
     return names
 
 
@@ -239,7 +254,7 @@ def _execute(args: argparse.Namespace, config: Mapping[str, Any], repo: Path, pr
     if unknown:
         raise SideLaneError(f"unknown capabilities: {', '.join(unknown)}")
     readiness = _capability_report(
-        config, args.host, "execute", args.provider, args.model
+        config, args.host, "execute", args.provider, args.model, repo
     )["capabilities"]
     missing = [name for name in args.capability if not readiness.get(name)]
     if missing:
@@ -294,7 +309,8 @@ def run(argv: Sequence[str] | None = None) -> int:
         print(json.dumps(states, sort_keys=True) if args.json else "\n".join(f"{k}\t{v}" for k, v in states.items()))
         return 0
     if args.command == "check-capabilities":
-        report = _capability_report(config, args.host, args.mode, args.provider, args.model)
+        repo = validate_governance(args.repo) if args.repo else None
+        report = _capability_report(config, args.host, args.mode, args.provider, args.model, repo)
         print(json.dumps(report, sort_keys=True) if args.json else "\n".join(f"{k}\t{v}" for k, v in report.items()))
         return 0
     provider_config, _ = select_route(config, args.host, args.mode, args.provider, args.model)

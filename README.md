@@ -84,7 +84,7 @@ identifying CLAUDE.md as required and authoritative.
 
 Presence-only discovery does not retrieve a key or call a model:
 
-    side-lane check-capabilities --host codex --mode execute \
+    side-lane check-capabilities --host codex --mode execute --repo "$PWD" \
       --provider openrouter --model anthropic/claude-sonnet-5 --json
 
 Planning/staffing tools may use that check optionally. If this package or the

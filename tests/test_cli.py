@@ -90,6 +90,12 @@ class SideLaneTests(unittest.TestCase):
             )
             with mock.patch.dict("os.environ", {"CODEX_HOME": str(root)}):
                 self.assertEqual(cli._discover_mcp_names("codex"), {"gitnexus"})
+            repo = root / "repo"
+            repo.mkdir()
+            (repo / ".mcp.json").write_text(
+                '{"mcpServers":{"codegraph":{"command":"hidden"}}}', encoding="utf-8"
+            )
+            self.assertIn("codegraph", cli._discover_mcp_names("claude", repo))
 
     def test_execute_requires_lane_name_and_known_capabilities_before_secret(self) -> None:
         config = cli.load_config()
