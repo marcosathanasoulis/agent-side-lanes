@@ -77,6 +77,24 @@ There is no default, model-equivalence claim, quota detector, fallback, or
 silent substitution. Edit config/models.json deliberately to maintain your
 reviewed allowlist.
 
+The common model bands below are selection guidance, not claims that the
+models are interchangeable or have identical tools, quality, context, or
+price:
+
+| Work profile | Claude | OpenAI |
+| --- | --- | --- |
+| Efficient / high-volume | `anthropic/claude-haiku-4.5` | `openai/gpt-5.6-luna` |
+| Balanced | `anthropic/claude-sonnet-5` | `openai/gpt-5.6-terra` |
+| Frontier | `anthropic/claude-opus-5` | `openai/gpt-5.6-sol` |
+| Long-horizon premium | `anthropic/claude-fable-5` | No one-for-one OpenAI class |
+
+`openai/gpt-5.5` is also allowlisted for approved briefs that name it
+explicitly. Direct Anthropic review uses the corresponding Anthropic IDs;
+Haiku is pinned to `claude-haiku-4-5-20251001`. The OpenRouter routes above
+are allowed on either originating host, so a task can make an explicit spend
+or model choice without changing connector identity. The package still never
+chooses a model on the user's behalf.
+
 ## Governance and capability checks
 
 Targets must have root AGENTS.md and CLAUDE.md, with AGENTS.md unambiguously

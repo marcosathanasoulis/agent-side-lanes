@@ -4,17 +4,17 @@
     "claude": {
       "credential_service": "agent-side-lanes-anthropic",
       "routes": {
-        "review": {"claude": {"protocol": "anthropic-native", "models": ["claude-sonnet-5", "claude-opus-5"]}}
+        "review": {"claude": {"protocol": "anthropic-native", "models": ["claude-haiku-4-5-20251001", "claude-sonnet-5", "claude-opus-5", "claude-fable-5"]}}
       }
     },
     "openrouter": {
       "credential_service": "agent-side-lanes-openrouter",
       "base_url": "https://openrouter.ai/api/v1",
       "routes": {
-        "review": {"claude": {"protocol": "anthropic-compatible", "models": ["openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol"]}},
+        "review": {"claude": {"protocol": "anthropic-compatible", "models": ["anthropic/claude-haiku-4.5", "anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "anthropic/claude-fable-5", "openai/gpt-5.5", "openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol"]}},
         "execute": {
-          "codex": {"protocol": "responses", "models": ["anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "z-ai/glm-5.3"]},
-          "claude": {"protocol": "anthropic-compatible", "models": ["openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol", "z-ai/glm-5.3"]}
+          "codex": {"protocol": "responses", "models": ["anthropic/claude-haiku-4.5", "anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "anthropic/claude-fable-5", "openai/gpt-5.5", "openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol", "z-ai/glm-5.3"]},
+          "claude": {"protocol": "anthropic-compatible", "models": ["anthropic/claude-haiku-4.5", "anthropic/claude-sonnet-5", "anthropic/claude-opus-5", "anthropic/claude-fable-5", "openai/gpt-5.5", "openai/gpt-5.6-luna", "openai/gpt-5.6-terra", "openai/gpt-5.6-sol", "z-ai/glm-5.3"]}
         }
       }
     },

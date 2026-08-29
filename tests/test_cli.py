@@ -32,8 +32,37 @@ class SideLaneTests(unittest.TestCase):
         self.assertEqual(model["wire_api"], "responses")
         with self.assertRaisesRegex(cli.SideLaneError, "unsupported route"):
             cli.select_route(config, "codex", "execute", "claude", "claude-sonnet-5")
+        expected = {
+            "anthropic/claude-haiku-4.5",
+            "anthropic/claude-sonnet-5",
+            "anthropic/claude-opus-5",
+            "anthropic/claude-fable-5",
+            "openai/gpt-5.5",
+            "openai/gpt-5.6-luna",
+            "openai/gpt-5.6-terra",
+            "openai/gpt-5.6-sol",
+        }
+        for host in ("codex", "claude"):
+            for allowed_model in expected:
+                with self.subTest(host=host, model=allowed_model):
+                    cli.select_route(
+                        config, host, "execute", "openrouter", allowed_model
+                    )
         with self.assertRaisesRegex(cli.SideLaneError, "not allowed"):
-            cli.select_route(config, "claude", "execute", "openrouter", "anthropic/claude-sonnet-5")
+            cli.select_route(
+                config, "claude", "execute", "openrouter", "openai/gpt-5.5-pro"
+            )
+
+    def test_direct_claude_review_has_current_common_models(self) -> None:
+        config = cli.load_config()
+        for model in (
+            "claude-haiku-4-5-20251001",
+            "claude-sonnet-5",
+            "claude-opus-5",
+            "claude-fable-5",
+        ):
+            with self.subTest(model=model):
+                cli.select_route(config, "claude", "review", "claude", model)
 
     def test_config_requires_versioned_matrix(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
